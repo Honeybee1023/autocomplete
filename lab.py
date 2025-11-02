@@ -197,7 +197,26 @@ def generate_edits(word):
 
     Must be a generator! May output duplicate edits or the original word.
     """
-    raise NotImplementedError
+    letters = 'abcdefghijklmnopqrstuvwxyz'
+    length = len(word)
+
+    # Insertion
+    for i in range(length + 1):
+        for ch in letters:
+            yield word[:i] + ch + word[i:]
+
+    # Deletion
+    for i in range(length):
+        yield word[:i] + word[i+1:]
+
+    # Replacement
+    for i in range(length):
+        for ch in letters:
+            yield word[:i] + ch + word[i+1:]
+
+    # Transpose
+    for i in range(length - 1):
+        yield word[:i] + word[i+1] + word[i] + word[i+2:]
 
 
 def autocorrect(tree, prefix, max_count=None):
