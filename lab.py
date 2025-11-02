@@ -232,13 +232,20 @@ def autocorrect(tree, prefix, max_count=None):
     length = len(final_words)
     if max_count is None or length<max_count:
         g = generate_edits(prefix)
-        while max_count is None or len(final_words)<max_count:
-            edit = next(g)
-            if edit is None:
-                break
+        edit_freq_counts = []
+        for edit in g:
             if edit in tree:
+                edit_freq_counts.append((edit, tree[edit]))
+        if max_count is None:
+            #add all edits
+            for edit, _ in edit_freq_counts:
                 final_words.add(edit)
-                length += 1
+        else:
+            #sort highest to lowest frequency
+            edit_freq_counts.sort(key=lambda x: x[1], reverse=True)
+            edit_freq_counts = edit_freq_counts[0:(max_count - length)+1]
+            for edit, _ in edit_freq_counts:
+                final_words.add(edit)
     return final_words
 
 
