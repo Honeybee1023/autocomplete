@@ -218,6 +218,7 @@ def generate_edits(word):
     for i in range(length - 1):
         yield word[:i] + word[i+1] + word[i] + word[i+2:]
 
+    return None
 
 def autocorrect(tree, prefix, max_count=None):
     """
@@ -227,7 +228,18 @@ def autocorrect(tree, prefix, max_count=None):
     most-frequently occurring words that differ from prefix by a small edit, up to
     max_count total elements (or all elements if max_count is not specified).
     """
-    raise NotImplementedError
+    final_words = autocomplete(tree, prefix, max_count)
+    length = len(final_words)
+    if max_count is None or length<max_count:
+        g = generate_edits(prefix)
+        while max_count is None or len(final_words)<max_count:
+            edit = next(g)
+            if edit is None:
+                break
+            if edit in tree:
+                final_words.add(edit)
+                length += 1
+    return final_words
 
 
 def word_filter(tree, pattern):
