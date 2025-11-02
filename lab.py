@@ -162,7 +162,25 @@ def autocomplete(tree, prefix, max_count=None):
     prefix string in the given tree. Includes only the top max_count most common words
     if max_count is specified, otherwise returns all auto-completions.
     """
-    raise NotImplementedError
+    final_words = []
+
+    #get to current spot first
+    node = tree
+    for ch in prefix:
+        node = node.children[ch]
+        if node is None:
+            return set()
+
+    for suffix, value in node:
+        final_words.append((prefix + suffix, value))
+
+    #sort highest to lowest frequency
+    final_words.sort(key=lambda x: x[1], reverse=True)
+
+    if max_count is not None:
+        final_words = final_words[0:max_count]
+
+    return set(word for word, _ in final_words)
 
 
 def generate_edits(word):
