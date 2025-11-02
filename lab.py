@@ -243,9 +243,11 @@ def autocorrect(tree, prefix, max_count=None):
         else:
             #sort highest to lowest frequency
             edit_freq_counts.sort(key=lambda x: x[1], reverse=True)
-            edit_freq_counts = edit_freq_counts[0:(max_count - length)+1]
             for edit, _ in edit_freq_counts:
-                final_words.add(edit)
+                if len(final_words) < max_count:
+                    final_words.add(edit)
+                else:
+                    break
     return final_words
 
 
