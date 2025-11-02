@@ -64,7 +64,7 @@ class PrefixTree:
             if ch not in self.children:
                 raise KeyError
             self = self.children[ch]
-            
+
         if self.value is not None:
             return self.value
         else:
@@ -76,13 +76,29 @@ class PrefixTree:
         Returns a boolean indicating whether the given word has a set value in the tree.
         Raises a TypeError if the given key is not a string.
         """
-        raise NotImplementedError
+        if not isinstance(word, str):
+            raise TypeError
+
+        if word == "":
+            return self.value is not None
+
+        for ch in word:
+            if ch not in self.children:
+                return False
+            self = self.children[ch]
+
+        return self.value is not None
 
     def __iter__(self):
         """
         Generator that yields tuples of all the (word, value) pairs in the tree.
         """
-        raise NotImplementedError
+        if self.value is not None:
+            yield ("", self.value)
+
+        for ch, child in self.children.items():
+            for suffix, val in child:
+                yield (ch + suffix, val)
 
     def __delitem__(self, word):
         """
@@ -90,7 +106,34 @@ class PrefixTree:
         Raises a KeyError if the given word does not exist.
         Raises a TypeError if the given word is not a string.
         """
-        raise NotImplementedError
+        if not isinstance(word, str):
+            raise TypeError
+
+        if word == "":
+            if self.value is not None:
+                self.value = None
+                return
+            else:
+                raise KeyError
+
+        path = []
+        for ch in word:
+            if ch not in self.children:
+                raise KeyError
+            path.append((self, ch))
+            self = self.children[ch]
+
+        if self.value is None:
+            raise KeyError
+
+        self.value = None
+
+        for parent, ch in reversed(path):
+            child = parent.children[ch]
+            if child.value is None and not child.children:
+                del parent.children[ch]
+            else:
+                break
 
 
 def word_frequencies(text):
