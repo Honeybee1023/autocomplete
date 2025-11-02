@@ -142,8 +142,19 @@ def word_frequencies(text):
     keys are the words that appear in the text, and whose values are the number of times
     the associated word appears in the text.
     """
-    raise NotImplementedError
-
+    sentences = tokenize_sentences(text)
+    tree = PrefixTree()
+    word_count = {}
+    for sentence in sentences:
+        words = sentence.split()
+        for word in words:
+            if word in word_count:
+                word_count[word] += 1
+            else:
+                word_count[word] = 1
+    for word, count in word_count.items():
+        tree[word] = count
+    return tree
 
 def autocomplete(tree, prefix, max_count=None):
     """
