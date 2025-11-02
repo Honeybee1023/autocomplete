@@ -167,9 +167,9 @@ def autocomplete(tree, prefix, max_count=None):
     #get to current spot first
     node = tree
     for ch in prefix:
-        node = node.children[ch]
-        if node is None:
+        if ch not in node.children:
             return set()
+        node = node.children[ch]
 
     for suffix, value in node:
         final_words.append((prefix + suffix, value))
