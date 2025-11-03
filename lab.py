@@ -259,7 +259,31 @@ def word_filter(tree, pattern):
         - '?' - matches any single character,
         - otherwise the character must match the character in the word.
     """
-    raise NotImplementedError
+    #implement recursively, going one letter at time through pattern
+    final_words = set()
+
+    def word_filter_helper(node, pattern, current_word):
+        if not pattern:
+            if node.value is not None:
+                final_words.add(current_word)
+            return
+
+        if pattern[0] == '*':
+            # * = zero characters
+            word_filter_helper(node, pattern[1:], current_word)
+            # * = 1+ characters
+            for ch, child in node.children.items():
+                word_filter_helper(child, pattern, current_word + ch)
+        elif pattern[0] == '?':
+            for ch, child in node.children.items():
+                word_filter_helper(child, pattern[1:], current_word + ch)
+        else:
+            ch = pattern[0]
+            if ch in node.children:
+                word_filter_helper(node.children[ch], pattern[1:], current_word + ch)
+    
+    word_filter_helper(tree, pattern, "")
+    return final_words
 
 
 if __name__ == "__main__":
